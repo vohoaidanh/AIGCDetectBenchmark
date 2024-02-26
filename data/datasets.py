@@ -178,7 +178,7 @@ class read_data_new():
             img = custom_augment(img, self.opt)
 
         
-        
+
         
         
         if self.opt.detect_method in ['CNNSpot','Gram','Steg']:
