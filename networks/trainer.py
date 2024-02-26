@@ -15,7 +15,7 @@ class Trainer(BaseModel):
         super(Trainer, self).__init__(opt)
 
         if self.isTrain and not opt.continue_train:
-            # 会要用预训练的模型
+            # Will use pre-trained model
             self.model = get_model(opt)
 
 

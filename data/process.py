@@ -321,10 +321,11 @@ def processing_LNP(img,model_restoration,opt,imgname):
     img=torch.cat(img_list,0)
 
 
-
+    # feed img to DenoiseNet
     rgb_restored = model_restoration(img)
 
     # print(imgname)
+    # Clamps all elements in input into the range [ min, max ]. 
     rgb_restored = torch.clamp(rgb_restored,0,1)
     rgb_restored = rgb_restored.permute(0, 2, 3, 1).cpu().detach().numpy()
     for batch in range(len(rgb_restored)):
@@ -333,7 +334,7 @@ def processing_LNP(img,model_restoration,opt,imgname):
         if retval:
             denoised_img = Image.open(BytesIO(buffer)).convert('RGB')
         else:
-            print("保存到内存失败")
+            print("Unable to save to memory")
     denoised_img=processing(denoised_img,opt,'imagenet')
     return denoised_img
 
@@ -415,7 +416,7 @@ def processing_DIRE(img,opt,imgname):
         if retval:
             img_dire = Image.open(BytesIO(buffer)).convert('RGB')
         else:
-            print("保存到内存失败")
+            print("Unable to save to memory")
     
     img_dire=processing(img_dire,opt,'imagenet')
 

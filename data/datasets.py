@@ -140,6 +140,7 @@ def process_img(img,opt,imgname,target):
         opt.cropSize=256
         img = processing_LGrad(img, opt.gen_model, opt)
     elif opt.detect_method == 'LNP':
+        #model_restoration set in process.py
         img = processing_LNP(img, opt.model_restoration, opt, imgname)
     elif opt.detect_method == 'DIRE':
         img = processing_DIRE(img,opt,imgname)
@@ -191,6 +192,7 @@ class read_data_new():
             self.opt.cropSize=256
             img = processing_LGrad(img,self.opt.gen_model,self.opt)
         elif self.opt.detect_method == 'LNP':
+            #model_restoration set in process.py
             img = processing_LNP(img,self.opt.model_restoration,self.opt,imgname)
         elif self.opt.detect_method == 'DIRE':
             img = processing_DIRE(img,self.opt,imgname)

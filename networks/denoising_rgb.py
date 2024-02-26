@@ -139,6 +139,7 @@ class RRG(nn.Module):
 
 
 class DenoiseNet(nn.Module):
+    # DenoiseNet returns the output with noise removed
     def __init__(self, conv=conv):
         super(DenoiseNet, self).__init__()
         num_rrg = 4
