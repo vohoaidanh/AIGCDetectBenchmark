@@ -23,15 +23,14 @@ import cv2
 from skimage import img_as_ubyte
 
 
-
-exit(0)
+CUDA = torch.cuda.is_available()
 
 parser = argparse.ArgumentParser(description='RGB denoising evaluation on the validation set of SIDD')
 parser.add_argument('--input_dir', default='/data',
     type=str, help='Directory of validation images')
 parser.add_argument('--result_dir', default='the LNP pic dic',
     type=str, help='Directory for results')
-parser.add_argument('--weights', default='./weights/preprocessing/sidd_rgb.pth',
+parser.add_argument('--weights', default='weights/preprocessing/sidd_rgb.pth',
     type=str, help='Path to weights')
 parser.add_argument('--gpus', default='1', type=str, help='CUDA_VISIBLE_DEVICES')
 parser.add_argument('--save_images', action='store_true', help='Save denoised images in result directory')
@@ -61,12 +60,14 @@ def get_image_paths(folder_path):
     return image_paths
 
 
-keys=['stylegan2/car','stylegan2/cat','stylegan2/church','stylegan2/horse','whichfaceisreal']
+#keys=['stylegan2/car','stylegan2/cat','stylegan2/church','stylegan2/horse','whichfaceisreal']
+keys=['test']
 for key in keys:
+   
     image_paths=[]
     for sub in ['0_real','1_fake']:
         image_paths.extend(get_image_paths(f'{args.input_dir}/{key}/{sub}'))
-        
+    
     test_dataset = get_validation_data(image_paths,args.noise_type)
     test_loader = DataLoader(dataset=test_dataset, batch_size=1, shuffle=False, num_workers=0, drop_last=False)
     print(key+':'+str(len(test_dataset)))
@@ -74,13 +75,21 @@ for key in keys:
     model_restoration = DenoiseNet()
     util.load_checkpoint(model_restoration,args.weights)
     print("===>Testing using weights: ", args.weights)
-    model_restoration.cuda()
-    model_restoration=nn.DataParallel(model_restoration)
+    if CUDA:
+        model_restoration.cuda()
+        model_restoration=nn.DataParallel(model_restoration)
+    else:
+        print("Run model_restoration without CUDA")
+        
     model_restoration.eval()
     with torch.no_grad():
         psnr_val_rgb = []
         for ii, data_test in enumerate(tqdm(test_loader), 0):
-            rgb_noisy = data_test[0].cuda()
+            if CUDA:
+                rgb_noisy = data_test[0].cuda()
+            else:
+                rgb_noisy = data_test[0]
+                
             filenames = data_test[1]
             try:
                 rgb_restored = model_restoration(rgb_noisy)
@@ -111,3 +120,4 @@ for key in keys:
 
                     
 
+#python test_sidd_rgb_test.py --input_dir D:\K32\do_an_tot_nghiep\data\real_gen_dataset --result_dir D:\K32\do_an_tot_nghiep\data\LNP_data

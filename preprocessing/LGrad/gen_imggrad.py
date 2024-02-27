@@ -49,7 +49,7 @@ def read_batchimg(imgpath_list, noise_type):
         height,weight=img.height, img.width
 
 
-        #这里是新加入的对图像的预处理
+        #Here is the newly added image preprocessing
         if noise_type == 'jpg':
             # print('jpg')
             # quit()
@@ -100,7 +100,7 @@ def generate_images():
     print(f'Transform {imgdir} to {outdir}')
     os.makedirs(outdir, exist_ok=True)
 
-    # 将下载的预训练stylegan的分类器进行转换，变成pytorch版本
+    # Convert downloaded pretrained stylegan classifier to pytorch version
     model = build_model(gan_type='stylegan',
         module='discriminator',
         resolution=256,

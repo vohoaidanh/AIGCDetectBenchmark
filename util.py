@@ -46,7 +46,9 @@ def unnormalize(tens, mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]):
 
 
 def load_checkpoint(model, weights):
-    checkpoint = torch.load(weights)
+    device = get_device()
+
+    checkpoint = torch.load(weights, map_location=device)
     try:
         model.load_state_dict(checkpoint["state_dict"])
     except:
@@ -105,3 +107,10 @@ def get_model(opt):
         return model
     else:
         raise ValueError(f"Unsupported model_type: {opt.detect_method}")
+        
+#New function
+def get_device():
+    if torch.cuda.is_available():
+        return torch.device('cuda')
+    else:
+        return torch.device('cpu')
