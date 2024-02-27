@@ -7,3 +7,6 @@ torch>=1.2.0
 torchvision
 natsort
 ftfy
+tensorboardX
+blobfile
+mpi4py

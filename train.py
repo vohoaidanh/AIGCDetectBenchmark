@@ -39,7 +39,7 @@ def get_val_opt():
 if __name__ == '__main__':
     set_random_seed()
     opt = TrainOptions().parse()
-    opt.dataroot = '{}/{}/'.format(opt.dataroot, opt.train_split)
+    opt.dataroot = '{}/{}/'.format(opt.dataroot, opt.train_split) # opt.train_split  Default is 'train
     val_opt = get_val_opt()
 
     data_loader = create_dataloader_new(opt)
