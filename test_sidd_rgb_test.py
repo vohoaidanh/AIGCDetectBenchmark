@@ -32,7 +32,7 @@ parser.add_argument('--result_dir', default='the LNP pic dic',
     type=str, help='Directory for results')
 parser.add_argument('--weights', default='weights/preprocessing/sidd_rgb.pth',
     type=str, help='Path to weights')
-parser.add_argument('--gpus', default='1', type=str, help='CUDA_VISIBLE_DEVICES')
+parser.add_argument('--gpus', default='0', type=str, help='CUDA_VISIBLE_DEVICES')
 parser.add_argument('--save_images', action='store_true', help='Save denoised images in result directory')
 parser.add_argument('--noise_type', default=None,
     type=str,help='e.g. jpg, blur, resize')
