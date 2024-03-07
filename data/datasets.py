@@ -154,20 +154,20 @@ def process_img(img,opt,imgname,target):
     
 
 
-
-class read_data_new():
+class read_data():
     def __init__(self, opt):
         self.opt = opt
         self.root = opt.dataroot
+        self.img, self.label = self.__get_label()
+
+        # print('directory, realimg, fakeimg:', self.root, len(real_img_list), len(fake_img_list))
+
+    def __get_label(self):
         real_img_list = loadpathslist(self.root,'0_real')    
         real_label_list = [0 for _ in range(len(real_img_list))]
         fake_img_list = loadpathslist(self.root,'1_fake')
         fake_label_list = [1 for _ in range(len(fake_img_list))]
-        self.img = real_img_list+fake_img_list
-        self.label = real_label_list+fake_label_list
-
-        # print('directory, realimg, fakeimg:', self.root, len(real_img_list), len(fake_img_list))
-
+        return real_img_list+fake_img_list, real_label_list+fake_label_list
 
     def __getitem__(self, index):
         img, target = Image.open(self.img[index]).convert('RGB'), self.label[index]
@@ -177,9 +177,6 @@ class read_data_new():
         if (not self.opt.isTrain) and (not self.opt.isVal):
             img = custom_augment(img, self.opt)
 
-        
-
-        
         
         if self.opt.detect_method in ['CNNSpot','Gram','Steg']:
             img = processing(img,self.opt,'imagenet')
@@ -207,3 +204,45 @@ class read_data_new():
 
     def __len__(self):
         return len(self.label)
+
+
+class read_data_new():
+    def __new__(self, opt):
+        if 'elsa' in opt.dataset_name.lower():
+            return read_data_elsad3(opt)
+        else:
+            return read_data(opt)
+    
+
+    
+class read_data_elsad3(read_data):
+    def __init__(self,opt):
+        super().__init__(opt)
+        
+    def __get_label(self):
+        real_img_list = loadpathslist(self.root,'0_real')    
+        real_label_list = [0 for _ in range(len(real_img_list))]
+        fake_img_list = loadpathslist(self.root,'1_fake')
+        fake_label_list = [1 for _ in range(len(fake_img_list))]
+        
+        items = os.listdir(self.root)
+        
+        real = [os.path.join(self.root, i, 'real_{0}.jpg'.format(i)) for i in items]
+        gen0 = [os.path.join(self.root, i, 'gen0_{0}.jpg'.format(i)) for i in items]
+        #gen1 = [os.path.join(self.root, 'gen1_{0}.jpg'.format(i)) for i in items]
+        #gen2 = [os.path.join(self.root, 'gen2_{0}.jpg'.format(i)) for i in items]
+        #gen3 = [os.path.join(self.root, 'gen3_{0}.jpg'.format(i)) for i in items]
+        
+        real_label_list = [0 for _ in range(len(real))]
+        fake_label_list = [1 for _ in range(len(gen0))]
+        
+        return real + gen0, real_label_list+fake_label_list
+        
+
+
+
+
+
+        
+        
+   

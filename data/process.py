@@ -254,13 +254,9 @@ def processing_LGrad(img,gen_model,opt):
     if retval:
         img = Image.open(BytesIO(buffer)).convert('RGB')
     else:
-        print("保存到内存失败")
+        print("Unable to encode images")
     img=processing(img,opt,'imagenet')
     return img
-
-
-
-
 
 
 

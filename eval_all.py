@@ -29,7 +29,7 @@ set_random_seed()
 
 
 opt = TestOptions().parse(print_options=True) #获取参数类
-
+opt.dataset_name = 'ELSA'
 
 
 model_name = os.path.basename(opt.model_path).replace('.pth', '')
