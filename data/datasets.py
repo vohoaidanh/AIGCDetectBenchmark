@@ -220,11 +220,7 @@ class read_data_elsad3(read_data):
         super().__init__(opt)
         
     def __get_label(self):
-        real_img_list = loadpathslist(self.root,'0_real')    
-        real_label_list = [0 for _ in range(len(real_img_list))]
-        fake_img_list = loadpathslist(self.root,'1_fake')
-        fake_label_list = [1 for _ in range(len(fake_img_list))]
-        
+
         items = os.listdir(self.root)
         
         real = [os.path.join(self.root, i, 'real_{0}.jpg'.format(i)) for i in items]
