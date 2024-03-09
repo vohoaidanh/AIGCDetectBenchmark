@@ -1,2 +1,5 @@
 .spyproject/
 weights/
+results/
+resources/
+__pycache__/

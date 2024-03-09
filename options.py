@@ -54,6 +54,7 @@ class TrainOptions():
         parser.add_argument('--checkpoints_dir', type=str, default='./checkpoints', help='models are saved here')
         parser.add_argument('--weight_decay', type=float, default=0.0, help='loss weight for l2 reg')
         
+        
         return parser
     def gather_options(self):
         # initialize parser with basic options
@@ -130,7 +131,6 @@ class TestOptions():
 
     def initialize(self, parser):
 
-        
         # data augmentation
         parser.add_argument('--rz_interp', default='bilinear')
         parser.add_argument('--blur_sig', default='1.0')
@@ -154,6 +154,8 @@ class TestOptions():
         parser.add_argument('--DIRE_modelpath',type=str,default='/data_19/AIGCDetect/AIGCDetect/weights/preprocessing/lsun_bedroom.pt',help='the path of DIRE pre-trained model')
         parser.add_argument('--LGrad_modelpath', type=str,default='./weights/preprocessing/karras2019stylegan-bedrooms-256x256_discriminator.pth', help='the path of LGrad pre-trained model')
         
+        parser.add_argument('--dataset_name', type=str, default='', help='models are saved here')
+
         self.initialized = True
 
         return parser

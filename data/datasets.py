@@ -158,11 +158,11 @@ class read_data():
     def __init__(self, opt):
         self.opt = opt
         self.root = opt.dataroot
-        self.img, self.label = self.__get_label()
+        self.img, self.label = self.get_label()
 
         # print('directory, realimg, fakeimg:', self.root, len(real_img_list), len(fake_img_list))
 
-    def __get_label(self):
+    def get_label(self):
         real_img_list = loadpathslist(self.root,'0_real')    
         real_label_list = [0 for _ in range(len(real_img_list))]
         fake_img_list = loadpathslist(self.root,'1_fake')
@@ -219,7 +219,7 @@ class read_data_elsad3(read_data):
     def __init__(self,opt):
         super().__init__(opt)
         
-    def __get_label(self):
+    def get_label(self):
 
         items = os.listdir(self.root)
         
