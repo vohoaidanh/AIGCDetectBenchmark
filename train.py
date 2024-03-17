@@ -41,6 +41,12 @@ if __name__ == '__main__':
     opt = TrainOptions().parse()
     opt.dataroot = '{}/{}/'.format(opt.dataroot, opt.train_split) # opt.train_split  Default is 'train
     val_opt = get_val_opt()
+    
+    
+    ##############################
+    opt.detect_method = 'intrinsic'
+    
+    #############################
 
     data_loader = create_dataloader_new(opt)
     dataset_size = len(data_loader)

@@ -47,11 +47,26 @@ from data import create_dataloader, create_dataloader_new
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
-
 opt = TestOptions().parse(print_options=True) #获取参数类
 opt.dataroot = '{}/{}'.format(dataroot, 'train')
 opt.dataset_name = 'ELSA'
 data_loader = create_dataloader_new(opt)
+
+from networks.resnet import resnet50
+
+model = resnet50()
+model.fc
+model.fc.in_features
+
+from networks.IntrinsicBaseModel import resnet50_fusion
+
+model = resnet50_fusion()
+
+
+
+
+
+
 
 
 

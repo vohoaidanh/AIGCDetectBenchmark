@@ -3,7 +3,7 @@ import numpy as np
 from torch.utils.data.sampler import WeightedRandomSampler
 
 from .datasets import dataset_folder
-from .datasets import read_data_new
+from .datasets import read_data_new, read_data_intrinsic
 from torch.utils.data import Dataset
 
 def get_dataset(opt):
@@ -60,8 +60,14 @@ def create_dataloader(opt):
 
     
 def create_dataloader_new(opt):
+    
     shuffle = True if opt.isTrain else False
-    dataset = read_data_new(opt)
+    
+    if opt.detect_method.lower() == 'intrinsic':
+        dataset = read_data_intrinsic(opt)
+    else:
+        dataset = read_data_new(opt)
+    
     if opt.detect_method=='Fusing':
         data_loader = torch.utils.data.DataLoader(dataset,
                                               batch_size=opt.batch_size,
@@ -74,4 +80,7 @@ def create_dataloader_new(opt):
                                               shuffle=shuffle,
                                               num_workers=int(0))
     return data_loader
+
+
+
 

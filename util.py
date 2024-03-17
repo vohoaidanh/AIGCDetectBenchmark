@@ -14,6 +14,9 @@ import networks.univfd_models as univfd_models
 import networks.resnet_gram as ResnetGram
 from networks.Patch5Model import Patch5Model
 from networks.resnet import resnet50
+
+from networks.IntrinsicBaseModel import resnet50_fusion
+
 import torch.nn as nn
 import numpy as np
 import random
@@ -105,6 +108,10 @@ def get_model(opt):
         if opt.isTrain:
             torch.nn.init.normal_(model.fc.weight.data, 0.0, opt.init_gain) 
         return model
+    elif opt.detect_method.lower() == "intrinsic":
+        model = resnet50_fusion(num_classes=1)
+        pass
+    
     else:
         raise ValueError(f"Unsupported model_type: {opt.detect_method}")
         

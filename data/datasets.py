@@ -129,7 +129,7 @@ def loadpathslist(root,flag):
         return paths
 
 def process_img(img,opt,imgname,target):
-    if opt.detect_method in ['CNNSpot','Gram']:
+    if opt.detect_method in ['CNNSpot','Gram','intrinsic']:
         img = processing(img,opt,'imagenet')
     elif opt.detect_method == 'FreDect':
         img = processing_DCT(img,opt)
@@ -205,15 +205,12 @@ class read_data():
     def __len__(self):
         return len(self.label)
 
-
 class read_data_new():
     def __new__(self, opt):
         if 'elsa' in opt.dataset_name.lower():
             return read_data_elsad3(opt)
         else:
             return read_data(opt)
-    
-
     
 class read_data_elsad3(read_data):
     def __init__(self,opt):
@@ -235,8 +232,66 @@ class read_data_elsad3(read_data):
         return real + gen0, real_label_list+fake_label_list
         
 
+from pathlib import Path
+class read_data_intrinsic():
+    def __init__(self, opt):
+        self.opt = opt
+        self.root = opt.dataroot
+        self.img, self.label = self.get_label()
+
+        # print('directory, realimg, fakeimg:', self.root, len(real_img_list), len(fake_img_list))
+
+    def get_label(self):
+        real_img_list = loadpathslist(self.root,'0_real')  
+        real_img_list = [i for i in real_img_list if 'origin' in i]
+        real_label_list = [0 for _ in range(len(real_img_list))]
+        
+        fake_img_list = loadpathslist(self.root,'1_fake')
+        fake_img_list = [i for i in fake_img_list if 'origin' in i]
+        fake_label_list = [1 for _ in range(len(fake_img_list))]
+        
+        return real_img_list+fake_img_list, real_label_list+fake_label_list
+
+    def __getitem__(self, index):
+        
+        img, target = Image.open(self.img[index]).convert('RGB'), self.label[index]
+        imgname = self.img[index]
+        
+        img_sha_filename = imgname.replace('origin', 'shading')
+        img_shading =  Image.open(img_sha_filename).convert('RGB')
+        
+        # compute scaling
+        height, width = img.height, img.width
+        
+        if (not self.opt.isTrain) and (not self.opt.isVal):
+            img = custom_augment(img, self.opt)
+
+        if self.opt.detect_method in ['CNNSpot','Gram','Steg','intrinsic']:
+            img = processing(img,self.opt,'imagenet')
+        elif self.opt.detect_method == 'FreDect':
+            img = processing_DCT(img,self.opt)
+        elif self.opt.detect_method == 'Fusing':
+            input_img, cropped_img, scale = processing_PSM(img,self.opt)
+            return input_img, cropped_img, target, scale, imgname
+        elif self.opt.detect_method == 'LGrad':
+            self.opt.cropSize=256
+            img = processing_LGrad(img,self.opt.gen_model,self.opt)
+        elif self.opt.detect_method == 'LNP':
+            #model_restoration set in process.py
+            img = processing_LNP(img,self.opt.model_restoration,self.opt,imgname)
+        elif self.opt.detect_method == 'DIRE':
+            img = processing_DIRE(img,self.opt,imgname)
+        elif self.opt.detect_method == 'UnivFD':
+            # print("UnivFD processing")
+            img = processing(img,self.opt,'clip')
+        else:
+            raise ValueError(f"Unsupported model_type: {self.opt.detect_method}")
 
 
+        return img, img_shading, target
+
+    def __len__(self):
+        return len(self.label)
 
 
         
