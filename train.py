@@ -65,6 +65,9 @@ if __name__ == '__main__':
         epoch_iter = 0
 
         for i, data in enumerate(data_loader):
+            if None in data:
+                continue
+            
             model.total_steps += 1
             epoch_iter += opt.batch_size
 

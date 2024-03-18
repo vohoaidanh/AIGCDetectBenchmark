@@ -13,9 +13,23 @@ from data.datasets import loadpathslist,custom_augment,process_img
 from PIL import Image
 
 
-
-
-        
+def validate_intrinsic(model, data_loader):
+    y_true, y_pred = [], []
+    i = 0
+    with torch.no_grad():
+        for data in data_loader:
+            if None in data:
+                continue
+            
+            img, img2, label = data
+            i += 1
+            print("batch number {}/{}".format(i, len(data_loader)), end='\r')
+            in_tens = img.cuda()
+            in_tens2 = img2.cuda()
+            # label = label.cuda()
+            y_pred.extend(model(in_tens, in_tens2).sigmoid().flatten().tolist())
+            y_true.extend(label.flatten().tolist())
+    return y_true, y_pred
         
 def validate_PSM(model, data_loader):
     y_true, y_pred = [], []
@@ -76,10 +90,16 @@ def validate(model, opt):
     y_true, y_pred = [], []
     if opt.detect_method == "Fusing":
         y_true, y_pred = validate_PSM(model, data_loader)
+    elif opt.detect_method == 'intrinsic':
+        y_true, y_pred = validate_intrinsic(model, data_loader)
     else:
         # with torch.no_grad():
         i = 0
-        for img, label in data_loader:
+        for data in data_loader:
+            if None in data:
+                continue
+            
+            img, label = data
             i += 1
             print("batch number {}/{}".format(i, len(data_loader)), end='\r')
             in_tens = img.cuda()

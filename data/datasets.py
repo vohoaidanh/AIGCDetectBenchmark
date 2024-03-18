@@ -227,13 +227,18 @@ class read_data_intrinsic():
         return real_img_list+fake_img_list, real_label_list+fake_label_list
 
     def __getitem__(self, index):
+        file1 = self.img[index]
+        file2 = file1.replace('origin', 'shading')
+        file3 = file1.replace('origin', 'albedo')
         
-        img, target = Image.open(self.img[index]).convert('RGB'), self.label[index]
-        imgname = self.img[index]
-        
-        img_sha_filename = imgname.replace('origin', 'shading')
-        img_shading =  Image.open(img_sha_filename).convert('RGB')
-        
+        if os.path.exists(file1) and os.path.exists(file2) and os.path.exists(file3):
+            
+            img, target = Image.open(self.img[index]).convert('RGB'), self.label[index]
+            imgname = self.img[index]
+            
+            img_shading =  Image.open(file2).convert('RGB')
+        else:
+            return (None, None, None)
         # compute scaling
         height, width = img.height, img.width
         

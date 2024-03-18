@@ -97,10 +97,38 @@ a = smaple[1]
 
 
 
+import os
+import shutil
+
+def copy_images(source_folder, destination_folder):
+    # Check if the source folder exists
+    if not os.path.exists(source_folder):
+        print("Source folder does not exist.")
+        return
+    
+    # Check if the destination folder exists, if not, create it
+    if not os.path.exists(destination_folder):
+        os.makedirs(destination_folder)
+    
+    # Recursively copy the entire directory tree
+    for root, dirs, files in os.walk(source_folder):
+        for filename in files:
+            # Check if the file is an image (you can customize this condition)
+            if filename.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.bmp')):
+                source_path = os.path.join(root, filename)
+                relative_path = os.path.relpath(source_path, source_folder)
+                destination_path = os.path.join(destination_folder, relative_path)
+                destination_dir = os.path.dirname(destination_path)
+                # Create the directory if it doesn't exist
+                if not os.path.exists(destination_dir):
+                    os.makedirs(destination_dir)
+                # Copy the image file to the destination folder
+                shutil.copyfile(source_path, destination_path)
+                print(f"Copied {filename} to {destination_folder}")
 
 
-
-
-
+#source_folder = r'D:\K32\do_an_tot_nghiep\data\real_gen_dataset'
+#destination_folder = r'D:\K32\do_an_tot_nghiep\data\real_gen_dataset2'
+#copy_images(source_folder, destination_folder)
 
 
