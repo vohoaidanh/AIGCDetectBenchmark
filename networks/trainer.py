@@ -83,7 +83,7 @@ class Trainer(BaseModel):
         elif self.opt.detect_method == "UnivFD":
             self.output = self.model(self.input)
             self.output = self.output.view(-1).unsqueeze(1)
-        elif self.opt.detect_method == "intrinsic":
+        elif self.opt.detect_method.lower() == "intrinsic":
             self.output = self.model(self.input1, self.input2)
         else: 
             self.output = self.model(self.input)

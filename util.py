@@ -110,7 +110,7 @@ def get_model(opt):
         return model
     elif opt.detect_method.lower() == "intrinsic":
         model = resnet50_fusion(num_classes=1)
-        pass
+        return model
     
     else:
         raise ValueError(f"Unsupported model_type: {opt.detect_method}")

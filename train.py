@@ -44,7 +44,7 @@ if __name__ == '__main__':
     
     
     ##############################
-    opt.detect_method = 'intrinsic'
+    #opt.detect_method = 'intrinsic'
     
     #############################
 

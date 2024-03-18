@@ -3,3 +3,4 @@ weights/
 results/
 resources/
 __pycache__/
+ checkpoints/

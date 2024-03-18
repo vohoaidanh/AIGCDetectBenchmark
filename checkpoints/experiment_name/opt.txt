@@ -1,0 +1,42 @@
+----------------- Options ---------------
+                 CropSize: 224                           
+               batch_size: 64                            
+                    beta1: 0.9                           
+                blur_prob: 0.1                           
+                 blur_sig: 0.0,3.0                       
+          checkpoints_dir: ./checkpoints                 
+                  classes: ['airplane', 'bird', 'bicycle', 'boat', 'bottle', 'bus', 'car', 'cat', 'cow', 'chair', 'diningtable', 'dog', 'person', 'pottedplant', 'motorbike', 'tvmonitor', 'train', 'sheep', 'sofa', 'horse']	[default: airplane,bird,bicycle,boat,bottle,bus,car,cat,cow,chair,diningtable,dog,person,pottedplant,motorbike,tvmonitor,train,sheep,sofa,horse]
+           continue_train: False                         
+                 data_aug: False                         
+                 dataroot: /hotdata/share/AIGCDetect     
+            detect_method: CNNSpot                       
+          earlystop_epoch: 5                             
+              epoch_count: 1                             
+             fix_backbone: False                         
+                init_gain: 0.02                          
+                init_type: normal                        
+                  isTrain: True                          	[default: None]
+                    isVal: False                         	[default: None]
+               jpg_method: cv2,pil                       
+                 jpg_prob: 0.1                           
+                 jpg_qual: 30,100                        
+               last_epoch: -1                            
+                 loadSize: 256                           
+                loss_freq: 400                           
+                       lr: 0.0001                        
+                     mode: binary                        
+                     name: experiment_name               
+                new_optim: False                         
+                    niter: 1000                          
+                  no_crop: False                         
+                  no_flip: False                         
+                no_resize: False                         
+                    optim: adam                          
+              results_dir: ./results/CNNSpot             	[default: None]
+                rz_interp: bilinear                      
+          save_epoch_freq: 5                             
+         save_latest_freq: 2000                          
+              train_split: train                         
+                val_split: val                           
+             weight_decay: 0.0                           
+----------------- End -------------------
