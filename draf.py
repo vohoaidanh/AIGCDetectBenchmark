@@ -132,3 +132,24 @@ def copy_images(source_folder, destination_folder):
 #copy_images(source_folder, destination_folder)
 
 
+import numpy as np
+np.random.choice()
+
+
+
+
+input_tensor = torch.randn(1, 2048)  # Assuming batch size is 1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
