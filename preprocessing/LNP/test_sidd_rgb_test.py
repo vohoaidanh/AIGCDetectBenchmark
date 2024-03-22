@@ -23,9 +23,6 @@ import cv2
 from skimage import img_as_ubyte
 
 
-
-exit(0)
-
 parser = argparse.ArgumentParser(description='RGB denoising evaluation on the validation set of SIDD')
 parser.add_argument('--input_dir', default='/data',
     type=str, help='Directory of validation images')
