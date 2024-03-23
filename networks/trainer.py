@@ -97,4 +97,5 @@ class Trainer(BaseModel):
         self.optimizer.zero_grad()
         self.loss.backward()
         self.optimizer.step()
+        
 

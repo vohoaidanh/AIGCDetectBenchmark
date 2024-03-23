@@ -38,8 +38,54 @@ dif2 = np.asarray(origin_gray2, dtype='float32') - np.asarray(shading2[:,:,0], d
 
 plt.imshow(dif2, cmap='gray')
 
+import torch
+
+a = torch.tensor([1,2,3,4,5.123456789], dtype=torch.float32)
+
+a = a.flatten().tolist()
+
+import numpy as np
+np.average(a)
 
 
+
+
+from tensorboardX import SummaryWriter
+import tensorboardX as tb
+
+
+writer = SummaryWriter('results')
+
+mx = np.array([[1,2],[3,4]])
+
+writer.add_histogram('conf_matrix', mx+4,4)
+
+
+
+
+from sklearn.metrics import confusion_matrix, classification_report
+import matplotlib.pyplot as plt
+import pandas as pd
+import seaborn as sn
+
+
+y_true = np.array([1,0,0,1,1,1,0,1,1,0,1,1,1])
+y_pred = np.array([1,1,1,1,0,1,1,0,1,0,0,0,1])
+
+cf_matrix = confusion_matrix(y_true, y_pred)
+
+df_cm = pd.DataFrame(cf_matrix , index=[i for i in ['real','fake']],
+                         columns=[i for i in ['real','fake']])
+
+plt.figure(figsize=(7, 7))    
+
+sn.heatmap(df_cm, annot=True, cbar=False, cmap="YlGnBu").get_figure()
+
+
+
+a = confusion_matrix(y_true, y_pred)
+
+print(a)
 
 
 

@@ -37,11 +37,12 @@ processimg = transforms.Compose([
         ])
 
 KERNEL_X = np.array([[0, 0, 0],
-                  [0, -1, 1],
-                  [0, 0, 0]])
+                     [0,-1, 1],
+                     [0, 0, 0]])
+
 KERNEL_Y = np.array([[0, 0, 0],
-                  [0, -1, 0],
-                  [0, 1, 0]])
+                     [0,-1, 0],
+                     [0, 1, 0]])
 
 
 def cv2_read_image(image_path):
@@ -110,12 +111,6 @@ if __name__ == '__main__':
         save_image(dst_path, image)
         
     
-    
-    
-    
-    
-
-
 # =============================================================================
 # # Define the directory path
 # dir_path = "/home/user/documents"
@@ -127,7 +122,6 @@ if __name__ == '__main__':
 #     print("Files:", filenames)
 #     print()
 # =============================================================================
-    
     
     
     

@@ -60,7 +60,7 @@ for v_id, val in enumerate(vals):
 
 
     opt.process_device=torch.device("cpu")
-    acc, ap, _, _, _, _ = validate(model, opt)
+    acc, ap = validate(model, opt)[:2]
     rows.append([val, acc, ap])
     print("({}) acc: {}; ap: {}".format(val, acc, ap))
 
