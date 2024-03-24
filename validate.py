@@ -113,7 +113,7 @@ def validate(model, opt):
     acc = accuracy_score(y_true, y_pred > 0.5)
     ap = average_precision_score(y_true, y_pred)
     
-    conf_mat = confusion_matrix(y_true, y_pred)
+    conf_mat = confusion_matrix(y_true, y_pred > 0.5)
     
     return acc, ap, conf_mat, r_acc, f_acc, y_true, y_pred
 

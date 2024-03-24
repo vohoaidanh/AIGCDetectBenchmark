@@ -132,9 +132,9 @@ if __name__ == '__main__':
         # Caculate loss, acc each epoch
         y_true, y_pred = np.array(y_true), np.array(y_pred)
         
-        train_acc = accuracy_score(y_true, y_pred)
+        train_acc = accuracy_score(y_true, y_pred > 0.5)
         epoch_loss = np.average(loss)
-        train_conf_mat = confusion_matrix(y_true, y_pred)
+        train_conf_mat = confusion_matrix(y_true, y_pred > 0.5)
 
         train_writer.add_scalar('train_acc', train_acc, epoch)
         train_writer.add_scalar('epoch_loss', epoch_loss, epoch)
