@@ -74,8 +74,7 @@ if __name__ == '__main__':
         }
     
     experiment = comet_ml.Experiment(
-        project_name="ai-generated-image-detection",
-        name = comet_train_params['name']
+        project_name="ai-generated-image-detection"
     )
     
     experiment.log_parameter('Train params', comet_train_params)
@@ -116,7 +115,8 @@ if __name__ == '__main__':
             # Get loss, and acc of step
             y_pred.extend(model.output.sigmoid().flatten().tolist())
             y_true.extend(model.label.flatten().tolist())
-            loss.extend(model.loss)
+            
+            loss.append(model.loss.cpu().detach().numpy())
             if model.total_steps % opt.loss_freq == 0:
                 print("Train loss: {} at step: {}".format(model.loss, model.total_steps))
                 train_writer.add_scalar('step_loss', model.loss, model.total_steps)
@@ -130,27 +130,29 @@ if __name__ == '__main__':
             # iter_data_time = time.time()
 
         # Caculate loss, acc each epoch
+        y_true, y_pred = np.array(y_true), np.array(y_pred)
         
-        train_acc = accuracy_score(y_true, y_pred > 0.5)
+        train_acc = accuracy_score(y_true, y_pred)
         epoch_loss = np.average(loss)
-        
+        train_conf_mat = confusion_matrix(y_true, y_pred)
+
         train_writer.add_scalar('train_acc', train_acc, epoch)
         train_writer.add_scalar('epoch_loss', epoch_loss, epoch)
         
-        experiment.log_metric('train_acc', train_acc, epoch=epoch)
-        experiment.log_metric('train_epoch_loss', epoch_loss, epoch=epoch)
+        experiment.log_metric('train/epoch_acc', train_acc, epoch=epoch)
+        experiment.log_metric('train/epoch_loss', epoch_loss, epoch=epoch)
         file_name = "train_{}_epoch_{}.json".format(comet_train_params['name'], epoch)
-        experiment.log_confusion_matrix(y_true, y_pred,file_name=file_name, epoch=epoch)
+        experiment.log_confusion_matrix(matrix = train_conf_mat, file_name=file_name, epoch=epoch)
 
         if epoch % opt.save_epoch_freq == 0:
             print('saving the model at the end of epoch %d, iters %d' %
                   (epoch, model.total_steps))
-            model.save_networks('latest')
+            #model.save_networks('latest')
             model.save_networks(epoch)
 
         # Validation
         model.eval()
-        acc, ap, _, _, _, y_true, y_pred = validate(model.model, val_opt)
+        acc, ap, val_conf_mat, _, _, y_true, y_pred = validate(model.model, val_opt)
         val_writer.add_scalar('accuracy', acc, model.total_steps)
         val_writer.add_scalar('ap', ap, model.total_steps)
         
@@ -158,9 +160,9 @@ if __name__ == '__main__':
 
         val_acc = acc
         
-        experiment.log_metric('val_acc', val_acc, epoch=epoch)
+        experiment.log_metric('val/epoch_acc', val_acc, epoch=epoch)
         file_name = "val_{}_epoch_{}.json".format(comet_train_params['name'], epoch)
-        experiment.log_confusion_matrix(y_true, y_pred,file_name=file_name, epoch=epoch)
+        experiment.log_confusion_matrix(matrix = val_conf_mat, file_name=file_name, epoch=epoch)
 
         early_stopping(acc, model)
         if early_stopping.early_stop:
