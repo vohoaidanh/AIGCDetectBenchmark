@@ -12,6 +12,9 @@ from eval_config import *
 from PIL import ImageFile
 from util import create_argparser,get_model, set_random_seed
 
+from datetime import datetime
+dt = datetime.now().strftime("%Y%m%d%H%M%S")
+
 import comet_ml
 
 
@@ -35,7 +38,6 @@ comet_train_params = {
     'CropSize': opt.CropSize,
     'batch_size':opt.batch_size,
     'detect_method':opt.detect_method,
-    'dataset_name':opt.earlystop_epoch,
     'noise_type': opt.noise_type,
     'model_path': opt.model_path,
     'jpg_qual': opt.jpg_qual
@@ -80,11 +82,11 @@ for v_id, val in enumerate(vals):
     rows.append([val, acc, ap])
     print("({}) acc: {}; ap: {}".format(val, acc, ap))
     
-    experiment.log_metric('corsstest/acc', val_acc, epoch=epoch)
-    file_name = "corsstest_{}.json".format(comet_train_params['name'])
-    experiment.log_confusion_matrix(matrix = val_conf_mat, file_name=file_name, epoch=epoch)
+    experiment.log_metric('corsstest/acc', acc)
+    file_name = "corss_test_{}.json".format(dt)
+    experiment.log_confusion_matrix(matrix = conf_mat, file_name=file_name)
 
-
+experiment.end()
 
 # 结果文件
 csv_name = results_dir + '/{}_{}.csv'.format(opt.detect_method,opt.noise_type)
