@@ -17,4 +17,3 @@ class MPI:
 
 MPI = MPI()
 
-MPI.COMM_WORLD.size

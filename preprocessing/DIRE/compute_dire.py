@@ -8,7 +8,7 @@ import torch
 
 import sys
 import cv2
-from mpi4py import MPI
+#from mpi4py import MPI
 
 import torch.nn.functional as F
 import torchvision.transforms as transforms
@@ -17,19 +17,33 @@ import numpy as np
 import torch as th
 import torch.distributed as dist
 
-
-sys.path.append("/data_19/AIGCDetect/AIGCDetect")
-from preprocessing_model.guided_diffusion import dist_util, logger
-from preprocessing_model.guided_diffusion.image_datasets import load_data_for_reverse
-from preprocessing_model.guided_diffusion.script_util import (
+from guided_diffusion import dist_util, logger
+from guided_diffusion.image_datasets import load_data_for_reverse
+from guided_diffusion.script_util import (
     NUM_CLASSES,
     model_and_diffusion_defaults,
     create_model_and_diffusion,
     add_dict_to_argparser,
     args_to_dict,
 )
-from PIL import ImageFile
-ImageFile.LOAD_TRUNCATED_IMAGES = True
+
+class COMM_WORLD:
+    def __init__(self, size = 1, rank = 0):
+        self.size = size
+        self.rank = rank
+        
+    def Get_rank(self):
+        return self.rank
+
+class MPI:
+    def __init__(self, size = 1, rank = 0):
+        self.COMM_WORLD = COMM_WORLD(size, rank)
+
+
+
+MPI = MPI()
+
+
 
 def reshape_image(imgs: torch.Tensor, image_size: int) -> torch.Tensor:
     if len(imgs.shape) == 3:
@@ -44,9 +58,8 @@ def reshape_image(imgs: torch.Tensor, image_size: int) -> torch.Tensor:
 
 def main():
     args = create_argparser().parse_args()
-    print(args)
 
-    dist_util.setup_dist(os.environ["CUDA_VISIBLE_DEVICES"])
+    #dist_util.setup_dist(os.environ["CUDA_VISIBLE_DEVICES"])
     logger.configure(dir=args.recons_dir)
 
     os.makedirs(args.recons_dir, exist_ok=True)
@@ -54,17 +67,15 @@ def main():
     logger.log(str(args))
 
     model, diffusion = create_model_and_diffusion(**args_to_dict(args, model_and_diffusion_defaults().keys()))
-    
     model.load_state_dict(dist_util.load_state_dict(args.model_path, map_location="cpu"))
     model.to(dist_util.dev())
     logger.log("have created model and diffusion")
     if args.use_fp16:
         model.convert_to_fp16()
     model.eval()
-    print(args.noise_type)
+
     data = load_data_for_reverse(
-        data_dir=args.images_dir, batch_size=args.batch_size, image_size=args.image_size, class_cond=args.class_cond,
-        noise_type=args.noise_type
+        data_dir=args.images_dir, batch_size=args.batch_size, image_size=args.image_size, class_cond=args.class_cond
     )
     logger.log("have created data loader")
 
@@ -83,9 +94,7 @@ def main():
         imgs = imgs[:batch_size]
         paths = paths[:batch_size]
 
-
         imgs = imgs.to(dist_util.dev())
-
         model_kwargs = {}
         if args.class_cond:
             classes = th.randint(low=0, high=NUM_CLASSES, size=(batch_size,), device=dist_util.dev())
@@ -124,13 +133,13 @@ def main():
         dire = dire.permute(0, 2, 3, 1)
         dire = dire.contiguous()
 
-        gathered_samples = [th.zeros_like(recons) for _ in range(dist.get_world_size())]
-        dist.all_gather(gathered_samples, recons)  # gather not supported with NCCL
+        gathered_samples = [th.zeros_like(recons) for _ in range(1)]
+        #dist.all_gather(gathered_samples, recons)  # gather not supported with NCCL
 
         all_images.extend([sample.cpu().numpy() for sample in gathered_samples])
         if args.class_cond:
-            gathered_labels = [th.zeros_like(classes) for _ in range(dist.get_world_size())]
-            dist.all_gather(gathered_labels, classes)
+            gathered_labels = [th.zeros_like(classes) for _ in range(1)]
+            #dist.all_gather(gathered_labels, classes)
             all_labels.extend([labels.cpu().numpy() for labels in gathered_labels])
         have_finished_images += len(all_images) * batch_size
         # print(th.mean(res.float()))
@@ -139,45 +148,35 @@ def main():
             if args.has_subfolder:
                 recons_save_dir = os.path.join(args.recons_dir, paths[i].split("/")[-2])
                 dire_save_dir = os.path.join(args.dire_dir, paths[i].split("/")[-2])
-                # dire_save_dir = os.path.join(dire_save_dir, paths[i].split("/")[-2])
-                
             else:
                 recons_save_dir = args.recons_dir
                 dire_save_dir = args.dire_dir
-            
             fn_save = os.path.basename(paths[i])
-            if args.has_subclasses:
-                class_name=paths[i].split("/")[-3]
-                fn_save =f"{class_name}_{fn_save}"
-           
-            
             os.makedirs(recons_save_dir, exist_ok=True)
             os.makedirs(dire_save_dir, exist_ok=True)
             cv2.imwrite(
-                f"{dire_save_dir}/dire_{fn_save}", cv2.cvtColor(dire[i].cpu().numpy().astype(np.uint8), cv2.COLOR_RGB2BGR)
+                f"{dire_save_dir}/{fn_save}", cv2.cvtColor(dire[i].cpu().numpy().astype(np.uint8), cv2.COLOR_RGB2BGR)
             )
-            # cv2.imwrite(f"{recons_save_dir}/{fn_save}", cv2.cvtColor(recons[i].astype(np.uint8), cv2.COLOR_RGB2BGR))
+            cv2.imwrite(f"{recons_save_dir}/{fn_save}", cv2.cvtColor(recons[i].astype(np.uint8), cv2.COLOR_RGB2BGR))
         logger.log(f"have finished {have_finished_images} samples")
 
-    dist.barrier()
+    #dist.barrier()
     logger.log("finish computing recons & DIRE!")
 
 
 def create_argparser():
     defaults = dict(
-        images_dir="/hotdata/AIGCDetect/test/progan/cow",
-        recons_dir="/hotdata/AIGCDetect/test_dire/recons/stargan",
-        dire_dir="/hotdata/AIGCDetect/test_dire/dire/stargan",
-        noise_type="resize",
+        images_dir="/data2/wangzd/dataset/DiffusionForensics/images",
+        recons_dir="/data2/wangzd/dataset/DiffusionForensics/recons",
+        dire_dir="/data2/wangzd/dataset/DiffusionForensics/dire",
         clip_denoised=True,
-        num_samples=3998,
+        num_samples=-1,
         batch_size=16,
         use_ddim=False,
-        model_path="models/lsun_bedroom.pt",
-        real_step=0,  #test
+        model_path="",
+        real_step=0,
         continue_reverse=False,
         has_subfolder=False,
-        has_subclasses=False,
     )
     defaults.update(model_and_diffusion_defaults())
     parser = argparse.ArgumentParser()

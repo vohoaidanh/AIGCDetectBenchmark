@@ -4,7 +4,7 @@ import random
 
 from PIL import Image
 import blobfile as bf
-from mpi4py import MPI
+#from mpi4py import MPI
 import numpy as np
 import torch
 from torch.utils.data import DataLoader, Dataset
@@ -13,6 +13,28 @@ from . import logger
 from io import BytesIO
 from scipy.ndimage import gaussian_filter
 import torchvision
+
+
+class COMM_WORLD:
+    def __init__(self, size = 1, rank = 0):
+        self.size = size
+        self.rank = rank
+        
+    def Get_rank(self):
+        return self.rank
+
+    def Get_size(self):
+        return 1
+
+class MPI:
+    def __init__(self, size = 1, rank = 0):
+        self.COMM_WORLD = COMM_WORLD(size, rank)
+
+    
+
+
+
+MPI = MPI()
 
 def load_data_for_reverse(
     *,

@@ -7,7 +7,7 @@ import os
 import socket
 
 import blobfile as bf
-from mpi4py import MPI
+#from mpi4py import MPI
 import torch as th
 import torch.distributed as dist
 from . import logger
@@ -16,6 +16,25 @@ from . import logger
 GPUS_PER_NODE = 8
 
 SETUP_RETRY_COUNT = 3
+
+class COMM_WORLD:
+    def __init__(self, size = 1, rank = 0):
+        self.size = size
+        self.rank = rank
+        
+    def Get_rank(self):
+        return self.rank
+    
+    def Get_size(self):
+        return 1
+
+class MPI:
+    def __init__(self, size = 1, rank = 0):
+        self.COMM_WORLD = COMM_WORLD(size, rank)
+
+
+
+MPI = MPI()
 
 
 def setup_dist(devices=""):

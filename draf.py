@@ -150,7 +150,8 @@ sample_continuous([0.2, 0.8])
 from preprocessing.DIRE.mpi4 import MPI
 
 
-
-
+data = bytes()
+for _ in range(None):
+    data += None
 
 
