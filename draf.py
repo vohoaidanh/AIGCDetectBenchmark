@@ -89,10 +89,61 @@ print(a)
 
 
 
+y_pred = [1.0,2.0,3.0,4.0,5.0,6.0,7.0]
+np.asarray(y_pred)> 4
+y_pred = [1.0 if i>4 else 0.0 for i in y_pred]
+y_pred>0.5
+
+
+import torch
+
+
+a = [torch.tensor(i).detach().numpy()  for i in range(10)]
+
+
+
+tensor_float = torch.tensor(1.0)
+
+b = tensor_float.float().numpy().astype('float32')
+b.shape
+b = 3.2
 
 
 
 
+label = torch.tensor([1.0, 2.0, 3.0])
+
+# Convert to integer
+label_int = label.int()  # Or .int() if you prefer 32-bit integers
+
+label_int.cpu().detach().numpy()
+
+
+
+int(torch.tensor(1.0))
+
+
+from datetime import datetime
+datetime.now().strftime("%Y%m%d%H%M%S")
+
+current_time = datetime.now().time()
+datetime_string = current_time.strftime("%Y-%m-%d %H:%M:%S")
+
+
+
+from random import random, choice
+
+def sample_continuous(s):
+    if len(s) == 1:
+        return s[0]
+    if len(s) == 2:
+        rg = s[1] - s[0]
+        return random() * rg + s[0]
+    raise ValueError("Length of iterable s should be 1 or 2.")
+
+
+
+sample_continuous([0.2, 0.8])
 
 
 

@@ -40,8 +40,6 @@ def data_augment(img, opt):
         qual = sample_discrete(opt.jpg_qual)
         img = jpeg_from_key(img, qual, method)
 
-
-
     return Image.fromarray(img)
 
 

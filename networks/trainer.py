@@ -76,7 +76,6 @@ class Trainer(BaseModel):
             self.input = input[0].to(self.device)
             self.label = input[1].to(self.device).float()
 
-
     def forward(self):
         if self.opt.detect_method == "Fusing":
             self.output = self.model(self.input_img, self.cropped_img, self.scale)
