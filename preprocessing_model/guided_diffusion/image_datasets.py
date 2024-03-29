@@ -45,14 +45,17 @@ def load_data_for_reverse(
     """
     if not data_dir:
         raise ValueError("unspecified data directory")
-    if MPI.COMM_WORLD.Get_rank() == 0:
-        all_files = _list_image_files_recursively(data_dir)
-
-    if MPI.COMM_WORLD.Get_rank() == 0:
-        MPI.COMM_WORLD.bcast(all_files)
-    else:
-        all_files = MPI.COMM_WORLD.bcast(None)
-
+# =============================================================================
+#     if MPI.COMM_WORLD.Get_rank() == 0:
+#         all_files = _list_image_files_recursively(data_dir)
+# 
+#     if MPI.COMM_WORLD.Get_rank() == 0:
+#         MPI.COMM_WORLD.bcast(all_files)
+#     else:
+#         all_files = MPI.COMM_WORLD.bcast(None)
+# 
+# =============================================================================
+    all_files = _list_image_files_recursively(data_dir)
     classes = None
     if class_cond:
         # Assume classes are the first part of the filename,
