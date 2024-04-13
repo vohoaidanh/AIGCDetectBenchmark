@@ -130,7 +130,6 @@ current_time = datetime.now().time()
 datetime_string = current_time.strftime("%Y-%m-%d %H:%M:%S")
 
 
-
 from random import random, choice
 
 def sample_continuous(s):

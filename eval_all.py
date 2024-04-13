@@ -83,7 +83,7 @@ for v_id, val in enumerate(vals):
     print("({}) acc: {}; ap: {}".format(val, acc, ap))
     
     experiment.log_metric('corsstest/acc', acc)
-    file_name = "corss_test_{}.json".format(dt)
+    file_name = "corss_{0}_{1}.json".format(val,dt)
     experiment.log_confusion_matrix(matrix = conf_mat, file_name=file_name)
 
 experiment.end()

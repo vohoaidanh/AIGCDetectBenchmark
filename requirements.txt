@@ -9,4 +9,4 @@ natsort
 ftfy
 tensorboardX
 blobfile
-mpi4py
+gdown
