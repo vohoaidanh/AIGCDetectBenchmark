@@ -79,11 +79,20 @@ for v_id, val in enumerate(vals):
     
     opt.process_device=torch.device("cuda")
     acc, ap, conf_mat = validate(model, opt)[:3]
-    rows.append([val, acc, ap])
-    print("({}) acc: {}; ap: {}".format(val, acc, ap))
+    
+    TP = conf_mat[1, 1]
+    TN = conf_mat[0, 0]
+    FP = conf_mat[0, 1]
+    FN = conf_mat[1, 0]
+    
+    TPR = TP / (TP + FN)
+    TNR = TN / (TN + FP)
+    
+    rows.append([val, acc, TPR, TNR])
+    print("({}) acc: {}; TPR: {}, TNR: {}".format(val, acc, TPR, TNR))
     
     experiment.log_metric('corsstest/acc', acc)
-    file_name = "corss_test_{}.json".format(dt)
+    file_name = "corss_{}_{}.json".format(val, dt)
     experiment.log_confusion_matrix(matrix = conf_mat, file_name=file_name)
 
 experiment.end()

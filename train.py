@@ -14,7 +14,8 @@ from networks.trainer import Trainer
 from options import TrainOptions
 from data.process import get_processing_model
 from util import set_random_seed
-from sklearn.metrics import accuracy_score, confusion_matrix
+from sklearn.metrics import accuracy_score, confusion_matrix, precision_score, recall_score
+
 import comet_ml
 
 """Currently assumes jpg_prob, blur_prob 0 or 1"""
@@ -153,10 +154,20 @@ if __name__ == '__main__':
         # Validation
         model.eval()
         acc, ap, val_conf_mat, _, _, y_true, y_pred = validate(model.model, val_opt)
+        TP = val_conf_mat[1, 1]
+        TN = val_conf_mat[0, 0]
+        FP = val_conf_mat[0, 1]
+        FN = val_conf_mat[1, 0]
+        
+        TPR = TP / (TP + FN)
+        TNR = TN / (TN + FP)
+        
         val_writer.add_scalar('accuracy', acc, model.total_steps)
         val_writer.add_scalar('ap', ap, model.total_steps)
+        val_writer.add_scalar('TPR', TPR, model.total_steps)
+        val_writer.add_scalar('TNR', TNR, model.total_steps)
         
-        print("(Val @ epoch {}) acc: {}; ap: {}".format(epoch, acc, ap))
+        print("(Val @ epoch {}) acc: {}; TPR: {}, TNR: {}".format(epoch, acc, TPR, TNR))
 
         val_acc = acc
         

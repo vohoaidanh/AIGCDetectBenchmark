@@ -109,8 +109,6 @@ b.shape
 b = 3.2
 
 
-
-
 label = torch.tensor([1.0, 2.0, 3.0])
 
 # Convert to integer
@@ -144,6 +142,43 @@ def sample_continuous(s):
 
 
 sample_continuous([0.2, 0.8])
+
+from sklearn.metrics import precision_recall_curve
+from sklearn.metrics import precision_score, recall_score, accuracy_score, confusion_matrix
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Giả sử y_true là nhãn thực của dữ liệu và y_scores là xác suất dự đoán của mô hình
+y_true =   np.array([0, 0, 1, 1], dtype='float32')
+y_pre =    np.array([0.3, 0.6, 0.6, 0.7])
+
+
+r_acc = accuracy_score(y_true[y_true == 0], y_pre[y_true == 0] < 0.5)
+f_acc = accuracy_score(y_true[y_true == 1], y_pre[y_true == 1] > 0.5)
+
+# Tính toán precision và recall
+precision, recall, thresholds = precision_recall_curve(y_true, y_pre)
+
+# Vẽ đường cong Precision-Recall
+plt.plot(recall, precision, marker='.')
+plt.xlabel('Recall')
+plt.ylabel('Precision')
+plt.title('Precision-Recall Curve')
+plt.show()
+
+
+precision_score(y_true, y_pre>0.5)
+recall_score(y_true, y_pre>0.5)
+
+2/(2+1)
+
+
+
+cm = confusion_matrix(y_true, y_pre>0.5)
+
+
+
+
 
 
 
